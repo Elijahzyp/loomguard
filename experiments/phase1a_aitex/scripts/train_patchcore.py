@@ -174,7 +174,6 @@ def main() -> None:
         accelerator=accelerator,
         devices=devices,
         max_epochs=1,             # PatchCore only needs one pass to build memory bank
-        enable_checkpointing=False,
         logger=False,
         num_sanity_val_steps=0,   # memory bank not ready before training; skip sanity check
     )
