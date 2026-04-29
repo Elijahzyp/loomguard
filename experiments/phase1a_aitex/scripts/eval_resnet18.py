@@ -23,7 +23,7 @@ _BASE = Path("/content/drive/MyDrive/loomguard_data") if _COLAB else Path(".")
 
 CONFIG = {
     "COLAB_MODE": _COLAB,
-    "MODEL_PATH": _BASE / "results" / "resnet18_20260429_081143.pth",
+    "MODEL_PATH": _BASE / "results" / "resnet18_20260429_163108.pth",
     "VAL_DIR": _BASE / "aitex_patches" / "val",
     "RESULTS_DIR": _BASE / "results",
     "PATCH_SIZE": 256,
