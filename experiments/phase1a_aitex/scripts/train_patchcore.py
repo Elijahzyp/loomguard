@@ -195,12 +195,9 @@ def main() -> None:
     elapsed = time.time() - t0
     print(f"Memory bank built in {elapsed:.0f}s")
 
-    if elapsed > 180:
-        print("\n⚠️  WARNING: 训练耗时超过 3 分钟，Mac 负载较高。")
-        print("   建议切换到 Google Colab（CONFIG 中将 COLAB_MODE 改为 True）。")
-        ans = input("   继续本地评估请输入 y，退出请输入 n：").strip().lower()
-        if ans != "y":
-            sys.exit(0)
+    if elapsed > 180 and not CONFIG["COLAB_MODE"]:
+        print(f"⚠️  WARNING: 训练耗时 {elapsed:.0f}s，建议使用 Colab。")
+        # 本地模式仅警告，不阻断
 
     # Phase 2: compute anomaly scores on val set
     print("Evaluating...")
