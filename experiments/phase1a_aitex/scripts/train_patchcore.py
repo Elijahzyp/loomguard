@@ -6,6 +6,7 @@ Run from: experiments/phase1a_aitex/
 """
 
 import json
+import os
 import sys
 import time
 from datetime import datetime
@@ -26,13 +27,9 @@ CONFIG = {
     "BACKBONE": "resnet18",
     "PATCH_SIZE": 256,
     "SEED": 42,
-    "COLAB_MODE": False,
-    "DATA_ROOT": Path("data/prepared"),
-    # Colab 中将 DATA_ROOT 改为：
-    # Path("/content/drive/MyDrive/loomguard_data/prepared")
-    # 并将 RESULTS_DIR 改为：
-    # Path("/content/drive/MyDrive/loomguard_data/results")
-    "RESULTS_DIR": Path("results"),
+    "COLAB_MODE": os.path.exists("/content"),
+    "DATA_ROOT": Path("/content/drive/MyDrive/loomguard_data/prepared") if os.path.exists("/content") else Path("data/prepared"),
+    "RESULTS_DIR": Path("/content/drive/MyDrive/loomguard_data/results") if os.path.exists("/content") else Path("results"),
 }
 
 IMAGE_WIDTH = 4096
