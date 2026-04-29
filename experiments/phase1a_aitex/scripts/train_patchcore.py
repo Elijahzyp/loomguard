@@ -8,6 +8,7 @@ Run from: experiments/phase1a_aitex/
 import json
 import logging
 import os
+import random
 import sys
 import time
 from datetime import datetime
@@ -31,6 +32,7 @@ CONFIG = {
     "BACKBONE": "resnet18",
     "PATCH_SIZE": 256,
     "CORESET_SAMPLING_RATIO": 0.1,
+    "MAX_TRAIN_PATCHES": 200,
     "SEED": 42,
     "COLAB_MODE": os.path.exists("/content"),
     "DATA_ROOT": Path("/content/drive/MyDrive/loomguard_data/prepared") if os.path.exists("/content") else Path("data/prepared"),
@@ -134,6 +136,11 @@ def main() -> None:
         CONFIG["PATCH_SIZE"],
         transform,
     )
+    random.seed(CONFIG["SEED"])
+    if len(train_dataset.samples) > CONFIG["MAX_TRAIN_PATCHES"]:
+        train_dataset.samples = random.sample(train_dataset.samples, CONFIG["MAX_TRAIN_PATCHES"])
+    print(f"PatchCore training on {len(train_dataset.samples)} patches")
+
     val_dataset = PatchDataset(
         [
             (data_root / "val" / "normal", 0),
