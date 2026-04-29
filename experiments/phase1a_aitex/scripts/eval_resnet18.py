@@ -24,13 +24,15 @@ _BASE = Path("/content/drive/MyDrive/loomguard_data") if _COLAB else Path(".")
 CONFIG = {
     "COLAB_MODE": _COLAB,
     "MODEL_PATH": _BASE / "results" / "resnet18_20260429_163108.pth",
-    "VAL_DIR": _BASE / "aitex_patches" / "val",
+    "VAL_DIR": "",  # override: set to a path string to use it; empty = auto ({BASE}/aitex_patches/val)
     "RESULTS_DIR": _BASE / "results",
     "PATCH_SIZE": 256,
     "BATCH_SIZE": 32,
     "SEED": 42,
     "THRESHOLDS": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
 }
+
+_VAL_DIR = Path(CONFIG["VAL_DIR"]) if CONFIG["VAL_DIR"] else _BASE / "aitex_patches" / "val"
 
 IMAGE_WIDTH = 4096
 
@@ -101,7 +103,17 @@ def main():
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
-    val_dataset = PatchDataset(CONFIG["VAL_DIR"], CONFIG["PATCH_SIZE"], transform)
+    # --- path diagnostics ---
+    print(f"VAL_DIR: {_VAL_DIR}")
+    if not _VAL_DIR.exists():
+        raise FileNotFoundError(f"VAL_DIR not found: {_VAL_DIR}\nSet CONFIG['VAL_DIR'] to the correct path.")
+    subdirs = [d for d in _VAL_DIR.iterdir() if d.is_dir()]
+    for d in sorted(subdirs):
+        n = len(list(d.glob("*.png")))
+        print(f"  {d.name}/: {n} .png files")
+    # ------------------------
+
+    val_dataset = PatchDataset(_VAL_DIR, CONFIG["PATCH_SIZE"], transform)
     val_loader = DataLoader(
         val_dataset,
         batch_size=CONFIG["BATCH_SIZE"],
