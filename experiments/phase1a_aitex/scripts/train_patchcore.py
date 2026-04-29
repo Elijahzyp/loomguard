@@ -6,11 +6,15 @@ Run from: experiments/phase1a_aitex/
 """
 
 import json
+import logging
 import os
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+logging.getLogger("lightning").setLevel(logging.WARNING)
+logging.getLogger("anomalib").setLevel(logging.WARNING)
 
 import numpy as np
 import torch
@@ -26,6 +30,7 @@ from anomalib.models import Patchcore
 CONFIG = {
     "BACKBONE": "resnet18",
     "PATCH_SIZE": 256,
+    "CORESET_SAMPLING_RATIO": 0.1,
     "SEED": 42,
     "COLAB_MODE": os.path.exists("/content"),
     "DATA_ROOT": Path("/content/drive/MyDrive/loomguard_data/prepared") if os.path.exists("/content") else Path("data/prepared"),
@@ -161,7 +166,7 @@ def main() -> None:
         backbone=CONFIG["BACKBONE"],
         layers=["layer2", "layer3"],
         pre_trained=True,
-        coreset_sampling_ratio=0.1,
+        coreset_sampling_ratio=CONFIG["CORESET_SAMPLING_RATIO"],
         num_neighbors=9,
         post_processor=False,  # skip built-in score normalization; we compute raw AUROC
         evaluator=False,       # skip built-in metric callbacks
@@ -172,6 +177,7 @@ def main() -> None:
         devices=devices,
         max_epochs=1,             # PatchCore only needs one pass to build memory bank
         logger=False,
+        enable_progress_bar=False,
         num_sanity_val_steps=0,   # memory bank not ready before training; skip sanity check
     )
 
