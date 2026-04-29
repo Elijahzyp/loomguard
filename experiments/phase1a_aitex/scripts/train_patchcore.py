@@ -32,7 +32,7 @@ CONFIG = {
     "BACKBONE": "resnet18",
     "PATCH_SIZE": 256,
     "CORESET_SAMPLING_RATIO": 0.1,
-    "MAX_TRAIN_PATCHES": 200,
+    "MAX_TRAIN_PATCHES": 500,  # grid tested: 200(done), 500(this run), 1000(future)
     "SEED": 42,
     "COLAB_MODE": os.path.exists("/content"),
     "DATA_ROOT": Path("/content/drive/MyDrive/loomguard_data/prepared") if os.path.exists("/content") else Path("data/prepared"),
