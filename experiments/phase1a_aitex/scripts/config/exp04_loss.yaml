@@ -1,0 +1,8 @@
+# Exp 4: Loss comparison. NOTE: the prompt designates BCEWithLogitsLoss(pos_weight) as the
+# new default for this experiment specifically. The repo-level default.yaml keeps "ce" so
+# baseline reproducibility checks remain clean.
+loss:
+  type: bce
+sweep:
+  loss_type: [bce, ce, focal]
+  seed: [42, 43, 44]

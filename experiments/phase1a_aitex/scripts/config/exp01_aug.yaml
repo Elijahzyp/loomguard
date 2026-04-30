@@ -1,0 +1,4 @@
+# Exp 1: Conservative Albumentations augmentation, with a no-aug control.
+# Run "conservative" and "none" with the same seed to compare.
+augmentation:
+  profile: conservative

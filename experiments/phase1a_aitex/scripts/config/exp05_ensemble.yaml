@@ -1,0 +1,10 @@
+# Exp 5: 2-model logit-average ensemble of top performers from Exp 3.
+# This config does not retrain anything. Pass the run dirs to ensemble.py:
+#
+#   python -m scripts.classification.ensemble \
+#     --runs results/runs/<resnet18_run> results/runs/<efficientnet_b0_run> \
+#     --tag exp05_ensemble_top2
+#
+ensemble:
+  mode: logit_avg     # average raw logits, then sigmoid/softmax (per loss type)
+  inputs: []          # populate via --runs CLI flag

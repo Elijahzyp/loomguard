@@ -1,0 +1,41 @@
+# Baseline recipe — every experiment YAML inherits from this and overrides only what changes.
+# Designed to match the frozen train_resnet.py pipeline as closely as possible
+# (within ±0.01 AUROC; bit-equivalence is not expected because the new pipeline seeds more strictly).
+
+model:
+  name: resnet18          # timm string. Supported: resnet18, efficientnet_b0, convnext_tiny
+  pretrained: true
+
+loss:
+  type: ce                # ce | bce | focal
+  pos_weight: auto        # "auto" = N_normal / N_defect from train split. Used by bce only.
+  focal_gamma: 2.0
+  focal_alpha: 0.25
+
+data:
+  patch_size: 256
+  batch_size: 32          # train.py auto-bumps to 64 in COLAB_MODE, mirroring baseline
+  num_workers: 0
+  image_width: 4096
+
+optim:
+  optimizer: adam
+  lr: 1.0e-4
+  weight_decay: 0.0
+
+schedule:
+  epochs: 10
+  scheduler: none
+
+augmentation:
+  profile: none           # none | conservative
+
+tta:
+  mode: none              # none | 4way | 8way
+
+# Selection criterion for "best" model checkpoint saved during training.
+# baseline used val_acc; new pipeline defaults to val_auroc.
+# train.py logs both regardless.
+selection_metric: val_auroc
+
+seed: 42

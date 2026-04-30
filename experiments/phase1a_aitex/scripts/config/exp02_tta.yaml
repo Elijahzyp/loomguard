@@ -1,0 +1,3 @@
+# Exp 2: 4-way (or 8-way) test-time augmentation at inference. Training is unchanged.
+tta:
+  mode: 4way   # set to 8way for the optional 8-way run

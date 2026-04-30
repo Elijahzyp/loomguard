@@ -1,0 +1,5 @@
+# Exp 3: Architecture sweep. Same recipe, same metrics, 3 seeds each.
+# train.py reads model.name from --model-name CLI override; run_sweep.sh expands the cross-product.
+sweep:
+  model_name: [resnet18, efficientnet_b0, convnext_tiny]
+  seed: [42, 43, 44]
