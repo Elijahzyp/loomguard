@@ -63,6 +63,11 @@ def _flatten(metrics: dict, parsed: dict) -> dict:
     bf = metrics.get("best_f1_threshold") or {}
     row["best_f1_threshold"] = bf.get("threshold")
     row["best_f1"] = bf.get("f1")
+    # Post-hoc TTA-specific fields (only populated for metrics_tta_*.json rows)
+    row["delta_auroc"] = metrics.get("delta_auroc")
+    row["inference_ms_per_image_with_tta"] = metrics.get("inference_ms_per_image_with_tta")
+    row["source_tag"] = metrics.get("source_tag")
+    row["source_auroc"] = metrics.get("source_auroc")
     # Anomaly-detection runs use a flatter schema
     if metrics.get("model_type") == "anomaly" or metrics.get("model") == "EfficientAD":
         row["model_name"] = metrics.get("model", row["model_name"])
@@ -96,19 +101,21 @@ def main() -> None:
 
     rows_by_group: dict[str, list[dict]] = {}
     for run_dir in sorted(P.RUNS_DIR.iterdir()):
-        metrics_path = run_dir / "metrics.json"
-        if not run_dir.is_dir() or not metrics_path.exists():
+        if not run_dir.is_dir():
             continue
-        try:
-            metrics = json.loads(metrics_path.read_text())
-        except Exception as e:
-            print(f"  skip {run_dir.name}: {e}")
-            continue
-        parsed = _parse_run_name(run_dir.name)
-        row = _flatten(metrics, parsed)
-        row["run_dir"] = str(run_dir)
-        group = _experiment_group(row["tag"] or parsed["tag"])
-        rows_by_group.setdefault(group, []).append(row)
+        # Pick up both metrics.json (primary) and metrics_tta_*.json (post-hoc TTA).
+        for metrics_path in sorted(run_dir.glob("metrics*.json")):
+            try:
+                metrics = json.loads(metrics_path.read_text())
+            except Exception as e:
+                print(f"  skip {run_dir.name}/{metrics_path.name}: {e}")
+                continue
+            parsed = _parse_run_name(run_dir.name)
+            row = _flatten(metrics, parsed)
+            row["run_dir"] = str(run_dir)
+            row["metrics_file"] = metrics_path.name
+            group = _experiment_group(row["tag"] or parsed["tag"])
+            rows_by_group.setdefault(group, []).append(row)
 
     if not rows_by_group:
         print("No metrics.json found in any run dir.")
