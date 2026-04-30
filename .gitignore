@@ -4,3 +4,13 @@ __pycache__/
 *.pyc
 .DS_Store
 data/
+experiments/phase1a_aitex/results/runs/
+
+# Claude Code session state
+.claude/
+
+# Anomalib auto-generated artifacts (regenerated every run)
+experiments/phase1a_aitex/results/EfficientAd/
+experiments/phase1a_aitex/results/Patchcore/
+experiments/phase1a_aitex/results/patchcore_*.json
+experiments/phase1a_aitex/results/efficientad_*.json
