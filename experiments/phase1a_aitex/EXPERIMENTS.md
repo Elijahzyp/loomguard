@@ -58,6 +58,23 @@ python -m scripts.classification.train \
   --tag exp01_aug_conservative --seed 42
 ```
 
+### Exp 1 Results (completed 2026-05-02)
+
+3 seeds (42, 123, 2024) × 2 aug profiles (none, conservative), 30 epochs each.
+
+| aug profile  | seed | AUROC  | Recall@0.5 | FPR@0.5 |
+|--------------|------|--------|------------|---------|
+| none         | 42   | 0.8606 | 0.6534     | 0.1056  |
+| none         | 123  | 0.8649 | 0.5852     | 0.0496  |
+| none         | 2024 | 0.8698 | 0.6506     | 0.1164  |
+| conservative | 42   | 0.8660 | 0.6449     | 0.1164  |
+| conservative | 123  | 0.8579 | 0.6847     | 0.1616  |
+| conservative | 2024 | 0.8748 | 0.5994     | 0.0517  |
+
+**Mean AUROC**: none 0.8651, conservative 0.8662 (delta +0.001)
+**Conclusion**: Conservative augmentation has no meaningful effect on AITEX.
+Delta is within seed variance. Does not meet success criteria (Recall>0.68, AUROC≥0.87).
+
 ## Exp 2 — Test-time augmentation (4-way / 8-way)
 
 Trains identically to the baseline, only the eval-time pass changes. TTA
@@ -75,7 +92,19 @@ python -m scripts.classification.train \
   --tta-mode 8way --tag exp02_tta_8way --seed 42
 ```
 
-## Exp 3 — Architecture sweep (resnet18 / efficientnet_b0 / convnext_tiny × 3 seeds)
+### Exp 2 Results (completed 2026-05-02)
+
+Post-hoc TTA evaluation (`tta_eval.py`) on the 6 Exp 1 runs × {4way, 8way}.
+
+| base run (aug × seed)    | TTA  | AUROC  | Recall@0.5 | FPR@0.5 |
+|--------------------------|------|--------|------------|---------|
+| _see Drive `results/summary/exp02_tta_comparison.csv`_ | | | | |
+
+**Conclusion**: TTA (both 4-way and 8-way) shows no meaningful improvement
+over base evaluation. Delta is within seed variance. Does not meet success
+criteria. Numeric table to be filled in from the Drive summary CSV.
+
+## Exp 3 — Architecture sweep (resnet18 / efficientnet_b0 / convnext_tiny × 3 seeds) (not yet run)
 
 ```bash
 bash scripts/run_sweep.sh scripts/config/default.yaml exp03_resnet18         resnet18
@@ -86,7 +115,7 @@ python scripts/aggregate_results.py
 # -> results/summary/exp03_arch_comparison.csv
 ```
 
-## Exp 4 — Loss comparison (bce / ce / focal)
+## Exp 4 — Loss comparison (bce / ce / focal) (not yet run)
 
 `bce` uses `BCEWithLogitsLoss(pos_weight = N_normal / N_defect)` on a 1-logit head.
 `focal` uses γ=2, α=0.25 on a 1-logit head. `ce` is the baseline (2-logit head).
@@ -97,7 +126,7 @@ bash scripts/run_sweep.sh scripts/config/default.yaml exp04_loss_ce    ""  ce
 bash scripts/run_sweep.sh scripts/config/default.yaml exp04_loss_focal ""  focal
 ```
 
-## Exp 5 — Two-model logit-average ensemble
+## Exp 5 — Two-model logit-average ensemble (not yet run)
 
 ```bash
 python -m scripts.classification.ensemble \
